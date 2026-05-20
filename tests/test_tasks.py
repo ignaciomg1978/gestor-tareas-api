@@ -78,3 +78,23 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+def test_list_tasks_by_status_returns_filtered(client):
+    _create_task(client, title="Pending task")
+    _create_task(client, title="Done task", status="done")
+
+    resp = client.get("/tasks/status/pending")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data) == 1
+    assert data[0]["title"] == "Pending task"
+    assert data[0]["status"] == "pending"
+
+
+def test_list_tasks_by_status_invalid_returns_422(client):
+    resp = client.get("/tasks/status/invalid")
+
+    assert resp.status_code == 422
+    assert "detail" in resp.json()
