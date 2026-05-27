@@ -270,22 +270,36 @@ entre casos de prueba. No afectan al archivo `tareas.db` de producción.
 
 ## Estructura del proyecto
 
+```mermaid
+graph LR
+    root["gestor-tareas-api/"]
+
+    root --> aplicacion["aplicacion/<br/><i>Paquete principal de la aplicación</i>"]
+    aplicacion --> init_app["__init__.py"]
+    aplicacion --> principal["principal.py<br/><i>Punto de entrada FastAPI y registro de routers</i>"]
+    aplicacion --> base_de_datos["base_de_datos.py<br/><i>Engine, sesión de SQLAlchemy y dependencia get_db</i>"]
+    aplicacion --> modelos["modelos.py<br/><i>Modelos ORM — tabla tasks, enum TaskStatus</i>"]
+    aplicacion --> esquemas["esquemas.py<br/><i>Esquemas Pydantic de entrada y respuesta</i>"]
+    aplicacion --> rutas["rutas/<br/><i>Endpoints agrupados por recurso</i>"]
+    rutas --> init_rutas["__init__.py"]
+    rutas --> tareas["tareas.py<br/><i>Endpoints REST de tareas — CRUD completo</i>"]
+
+    root --> tests["tests/<br/><i>Suite de tests de integración</i>"]
+    tests --> init_tests["__init__.py"]
+    tests --> test_tasks["test_tasks.py<br/><i>Tests con pytest y TestClient de FastAPI</i>"]
+
+    root --> agents["AGENTS.md<br/><i>Instrucciones y convenciones para Devin</i>"]
+    root --> requirements["requirements.txt<br/><i>Dependencias de producción y desarrollo</i>"]
+    root --> gitignore[".gitignore<br/><i>Archivos excluidos del control de versiones</i>"]
+    root --> readme["README.md<br/><i>Documentación del proyecto</i>"]
 ```
-gestor-tareas-api/
-├── aplicacion/                 # Paquete principal de la aplicación
-│   ├── __init__.py
-│   ├── principal.py            # Punto de entrada: instancia FastAPI y registro de routers
-│   ├── base_de_datos.py        # Configuración del engine, sesión de SQLAlchemy y dependencia get_db
-│   ├── modelos.py              # Modelos ORM (tabla tasks, enum TaskStatus)
-│   ├── esquemas.py             # Esquemas Pydantic de entrada (TaskCreate, TaskUpdate) y respuesta (TaskResponse)
-│   └── rutas/                  # Definición de endpoints agrupados por recurso
-│       ├── __init__.py
-│       └── tareas.py           # Endpoints REST de tareas (CRUD completo)
-├── tests/                      # Suite de tests de integración
-│   ├── __init__.py
-│   └── test_tasks.py           # Tests con pytest y TestClient de FastAPI
-├── AGENTS.md                   # Instrucciones y convenciones para Devin
-├── requirements.txt            # Dependencias del proyecto (producción y desarrollo)
-├── .gitignore                  # Archivos y carpetas excluidos del control de versiones
-└── README.md                   # Este archivo
-```
+
+| Ruta | Descripción |
+|------|-------------|
+| `aplicacion/principal.py` | Punto de entrada: crea la instancia de FastAPI y registra los routers |
+| `aplicacion/base_de_datos.py` | Configuración del engine y la sesión de SQLAlchemy; expone la dependencia `get_db` |
+| `aplicacion/modelos.py` | Modelos ORM: tabla `tasks` y enumeración `TaskStatus` |
+| `aplicacion/esquemas.py` | Esquemas Pydantic: `TaskCreate`, `TaskUpdate` (entrada) y `TaskResponse` (salida) |
+| `aplicacion/rutas/tareas.py` | Definición de los cinco endpoints REST (CRUD completo de tareas) |
+| `tests/test_tasks.py` | Tests de integración con pytest, httpx y SQLite independiente |
+| `requirements.txt` | Dependencias fijadas de producción y desarrollo |
