@@ -28,7 +28,8 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
     return task
 
 
-# Crea una nueva tarea y devuelve el recurso creado con código 201
+# Crea una nueva tarea y devuelve el recurso creado con código 201.
+# Campos opcionales: description, category y status.
 @router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
     task = Task(**payload.model_dump())

@@ -78,3 +78,57 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+# --- Tests del campo category ---
+
+
+def test_create_task_without_category_defaults_to_null(client):
+    task = _create_task(client)
+
+    assert task["category"] is None
+
+
+def test_create_task_with_category(client):
+    task = _create_task(client, category="trabajo")
+
+    assert task["category"] == "trabajo"
+
+
+def test_update_task_category(client):
+    task = _create_task(client)
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"category": "personal"})
+
+    assert resp.status_code == 200
+    assert resp.json()["category"] == "personal"
+
+
+def test_update_task_category_to_null(client):
+    task = _create_task(client, category="trabajo")
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"category": None})
+
+    assert resp.status_code == 200
+    assert resp.json()["category"] is None
+
+
+def test_get_task_includes_category(client):
+    task = _create_task(client, category="urgente")
+
+    resp = client.get(f"/tasks/{task['id']}")
+
+    assert resp.status_code == 200
+    assert resp.json()["category"] == "urgente"
+
+
+def test_list_tasks_includes_category(client):
+    _create_task(client, category="trabajo")
+    _create_task(client, category="personal")
+
+    resp = client.get("/tasks/")
+
+    assert resp.status_code == 200
+    categories = [t["category"] for t in resp.json()]
+    assert "trabajo" in categories
+    assert "personal" in categories
