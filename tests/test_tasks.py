@@ -78,3 +78,67 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+# --- Tests del campo prioridad ---
+
+
+def test_create_task_default_priority(client):
+    task = _create_task(client)
+    assert task["priority"] == "medium"
+
+
+def test_create_task_with_explicit_priority(client):
+    task = _create_task(client, priority="high")
+    assert task["priority"] == "high"
+
+
+def test_create_task_with_invalid_priority(client):
+    resp = client.post("/tasks/", json={"title": "Bad priority", "priority": "urgent"})
+    assert resp.status_code == 422
+
+
+def test_update_task_priority(client):
+    task = _create_task(client)
+    assert task["priority"] == "medium"
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"priority": "high"})
+
+    assert resp.status_code == 200
+    assert resp.json()["priority"] == "high"
+
+
+def test_update_task_invalid_priority(client):
+    task = _create_task(client)
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"priority": "urgent"})
+
+    assert resp.status_code == 422
+
+
+def test_list_tasks_by_priority(client):
+    _create_task(client, priority="low")
+    _create_task(client, priority="high")
+    _create_task(client, priority="low")
+
+    resp = client.get("/tasks/priority/low")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data) == 2
+    assert all(t["priority"] == "low" for t in data)
+
+
+def test_list_tasks_by_priority_empty(client):
+    _create_task(client, priority="low")
+
+    resp = client.get("/tasks/priority/high")
+
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+def test_list_tasks_by_priority_invalid(client):
+    resp = client.get("/tasks/priority/urgent")
+
+    assert resp.status_code == 422
