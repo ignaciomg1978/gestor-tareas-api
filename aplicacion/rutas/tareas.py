@@ -38,7 +38,8 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
     return task
 
 
-# Actualiza parcialmente una tarea; solo modifica los campos enviados en el cuerpo
+# Actualiza parcialmente una tarea; solo modifica los campos enviados en el cuerpo.
+# Devuelve 422 si el título tiene menos de 3 caracteres.
 @router.patch("/{task_id}", response_model=TaskResponse)
 def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)):
     task = db.query(Task).filter(Task.id == task_id).first()
