@@ -78,3 +78,55 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+# --- Tests para el campo description (máx 200 caracteres) ---
+
+
+def test_create_task_with_description(client):
+    """Crear una tarea con descripción válida debe devolver 201."""
+    resp = client.post(
+        "/tasks/", json={"title": "Tarea", "description": "Desc corta"}
+    )
+    assert resp.status_code == 201
+    assert resp.json()["description"] == "Desc corta"
+
+
+def test_create_task_without_description(client):
+    """Crear una tarea sin descripción debe devolver null en el campo."""
+    resp = client.post("/tasks/", json={"title": "Tarea sin desc"})
+    assert resp.status_code == 201
+    assert resp.json()["description"] is None
+
+
+def test_create_task_description_max_200(client):
+    """Crear una tarea con descripción de exactamente 200 caracteres debe funcionar."""
+    desc = "a" * 200
+    resp = client.post("/tasks/", json={"title": "Tarea", "description": desc})
+    assert resp.status_code == 201
+    assert resp.json()["description"] == desc
+
+
+def test_create_task_description_exceeds_200(client):
+    """Crear una tarea con descripción de más de 200 caracteres debe devolver 422."""
+    desc = "a" * 201
+    resp = client.post("/tasks/", json={"title": "Tarea", "description": desc})
+    assert resp.status_code == 422
+
+
+def test_update_task_description(client):
+    """Actualizar la descripción de una tarea pendiente debe funcionar."""
+    task = _create_task(client)
+    resp = client.patch(
+        f"/tasks/{task['id']}", json={"description": "Nueva descripción"}
+    )
+    assert resp.status_code == 200
+    assert resp.json()["description"] == "Nueva descripción"
+
+
+def test_update_task_description_exceeds_200(client):
+    """Actualizar con descripción de más de 200 caracteres debe devolver 422."""
+    task = _create_task(client)
+    desc = "b" * 201
+    resp = client.patch(f"/tasks/{task['id']}", json={"description": desc})
+    assert resp.status_code == 422
