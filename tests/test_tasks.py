@@ -78,3 +78,42 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+# --- Tests para PATCH /tasks/{id}/complete ---
+
+
+def test_complete_pending_task(client):
+    task = _create_task(client)
+
+    resp = client.patch(f"/tasks/{task['id']}/complete")
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "done"
+    assert data["id"] == task["id"]
+
+
+def test_complete_in_progress_task(client):
+    task = _create_task(client, status="in_progress")
+
+    resp = client.patch(f"/tasks/{task['id']}/complete")
+
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "done"
+
+
+def test_complete_already_done_task_returns_400(client):
+    task = _create_task(client, status="done")
+
+    resp = client.patch(f"/tasks/{task['id']}/complete")
+
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "La tarea ya está completada"
+
+
+def test_complete_nonexistent_task_returns_404(client):
+    resp = client.patch("/tasks/9999/complete")
+
+    assert resp.status_code == 404
+    assert resp.json()["detail"] == "Tarea no encontrada"
