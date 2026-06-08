@@ -1,8 +1,8 @@
 # Definición de los endpoints REST para la gestión de tareas
 
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from aplicacion.base_de_datos import get_db
@@ -13,10 +13,16 @@ from aplicacion.modelos import Task, TaskStatus
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
-# Devuelve la lista completa de tareas almacenadas
+# Devuelve las tareas almacenadas; acepta un límite opcional de resultados
 @router.get("/", response_model=List[TaskResponse])
-def list_tasks(db: Session = Depends(get_db)):
-    return db.query(Task).all()
+def list_tasks(
+    limit: Optional[int] = Query(default=None, ge=1),
+    db: Session = Depends(get_db),
+):
+    query = db.query(Task)
+    if limit is not None:
+        query = query.limit(limit)
+    return query.all()
 
 
 # Devuelve una tarea por su identificador; 404 si no existe
