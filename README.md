@@ -75,7 +75,7 @@ La documentación interactiva (Swagger UI) se genera automáticamente en
 
 ## Endpoints
 
-La API expone cinco endpoints bajo el prefijo `/tasks`.
+La API expone seis endpoints bajo el prefijo `/tasks`.
 
 ### 1. Listar todas las tareas
 
@@ -114,7 +114,31 @@ curl -X GET http://127.0.0.1:8000/tasks/
 
 ---
 
-### 2. Obtener una tarea por id
+### 2. Contar tareas
+
+| | |
+|---|---|
+| **Método** | `GET` |
+| **Ruta** | `/tasks/count` |
+| **Parámetros** | Ninguno |
+
+**Ejemplo curl:**
+
+```bash
+curl -X GET http://127.0.0.1:8000/tasks/count
+```
+
+**Ejemplo de respuesta** (`200 OK`):
+
+```json
+{
+  "count": 5
+}
+```
+
+---
+
+### 3. Obtener una tarea por id
 
 | | |
 |---|---|
@@ -150,7 +174,7 @@ curl -X GET http://127.0.0.1:8000/tasks/1
 
 ---
 
-### 3. Crear una nueva tarea
+### 4. Crear una nueva tarea
 
 | | |
 |---|---|
@@ -182,7 +206,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 
 ---
 
-### 4. Actualizar parcialmente una tarea
+### 5. Actualizar parcialmente una tarea
 
 | | |
 |---|---|
@@ -231,7 +255,7 @@ curl -X PATCH http://127.0.0.1:8000/tasks/1 \
 
 ---
 
-### 5. Eliminar una tarea
+### 6. Eliminar una tarea
 
 | | |
 |---|---|
@@ -299,7 +323,7 @@ graph LR
 | `aplicacion/principal.py` | Punto de entrada: crea la instancia de FastAPI y registra los routers |
 | `aplicacion/base_de_datos.py` | Configuración del engine y la sesión de SQLAlchemy; expone la dependencia `get_db` |
 | `aplicacion/modelos.py` | Modelos ORM: tabla `tasks` y enumeración `TaskStatus` |
-| `aplicacion/esquemas.py` | Esquemas Pydantic: `TaskCreate`, `TaskUpdate` (entrada) y `TaskResponse` (salida) |
-| `aplicacion/rutas/tareas.py` | Definición de los cinco endpoints REST (CRUD completo de tareas) |
+| `aplicacion/esquemas.py` | Esquemas Pydantic: `TaskCreate`, `TaskUpdate` (entrada), `TaskResponse` y `TaskCountResponse` (salida) |
+| `aplicacion/rutas/tareas.py` | Definición de los seis endpoints REST (CRUD completo de tareas + conteo) |
 | `tests/test_tasks.py` | Tests de integración con pytest, httpx y SQLite independiente |
 | `requirements.txt` | Dependencias fijadas de producción y desarrollo |
