@@ -2,8 +2,8 @@
 
 API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**.
 Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un
-identificador único, título, descripción opcional, estado (`pending`, `in_progress`, `done`) y
-fecha de creación asignada automáticamente.
+identificador único, título, descripción opcional, categoría opcional, estado (`pending`,
+`in_progress`, `done`) y fecha de creación asignada automáticamente.
 
 ---
 
@@ -99,6 +99,7 @@ curl -X GET http://127.0.0.1:8000/tasks/
     "id": 1,
     "title": "Revisar documentación",
     "description": "Revisar la documentación del sprint 3",
+    "category": "documentación",
     "status": "pending",
     "created_at": "2025-05-20T10:30:00"
   },
@@ -106,6 +107,7 @@ curl -X GET http://127.0.0.1:8000/tasks/
     "id": 2,
     "title": "Corregir bug login",
     "description": null,
+    "category": null,
     "status": "in_progress",
     "created_at": "2025-05-20T11:00:00"
   }
@@ -135,6 +137,7 @@ curl -X GET http://127.0.0.1:8000/tasks/1
   "id": 1,
   "title": "Revisar documentación",
   "description": "Revisar la documentación del sprint 3",
+  "category": "documentación",
   "status": "pending",
   "created_at": "2025-05-20T10:30:00"
 }
@@ -156,7 +159,7 @@ curl -X GET http://127.0.0.1:8000/tasks/1
 |---|---|
 | **Método** | `POST` |
 | **Ruta** | `/tasks/` |
-| **Cuerpo (JSON)** | `title` (str, obligatorio), `description` (str, opcional), `status` (str, opcional — por defecto `"pending"`) |
+| **Cuerpo (JSON)** | `title` (str, obligatorio), `description` (str, opcional), `category` (str, opcional), `status` (str, opcional — por defecto `"pending"`) |
 
 Valores válidos para `status`: `"pending"`, `"in_progress"`, `"done"`.
 
@@ -165,7 +168,7 @@ Valores válidos para `status`: `"pending"`, `"in_progress"`, `"done"`.
 ```bash
 curl -X POST http://127.0.0.1:8000/tasks/ \
   -H "Content-Type: application/json" \
-  -d '{"title": "Diseñar API", "description": "Definir contratos de endpoints"}'
+  -d '{"title": "Diseñar API", "description": "Definir contratos de endpoints", "category": "desarrollo"}'
 ```
 
 **Ejemplo de respuesta** (`201 Created`):
@@ -175,6 +178,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
   "id": 3,
   "title": "Diseñar API",
   "description": "Definir contratos de endpoints",
+  "category": "desarrollo",
   "status": "pending",
   "created_at": "2025-05-20T12:00:00"
 }
@@ -189,7 +193,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 | **Método** | `PATCH` |
 | **Ruta** | `/tasks/{task_id}` |
 | **Parámetros de ruta** | `task_id` (int) — Identificador de la tarea |
-| **Cuerpo (JSON)** | `title` (str, opcional), `description` (str, opcional), `status` (str, opcional) |
+| **Cuerpo (JSON)** | `title` (str, opcional), `description` (str, opcional), `category` (str, opcional), `status` (str, opcional) |
 
 > **Restricción:** no se permite actualizar una tarea cuyo estado sea `done`.
 
@@ -208,6 +212,7 @@ curl -X PATCH http://127.0.0.1:8000/tasks/1 \
   "id": 1,
   "title": "Revisar documentación",
   "description": "Revisar la documentación del sprint 3",
+  "category": "documentación",
   "status": "in_progress",
   "created_at": "2025-05-20T10:30:00"
 }
