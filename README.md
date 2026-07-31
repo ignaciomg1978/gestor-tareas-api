@@ -75,7 +75,7 @@ La documentación interactiva (Swagger UI) se genera automáticamente en
 
 ## Endpoints
 
-La API expone cinco endpoints bajo el prefijo `/tasks`.
+La API expone seis endpoints bajo el prefijo `/tasks`.
 
 ### 1. Listar todas las tareas
 
@@ -231,7 +231,55 @@ curl -X PATCH http://127.0.0.1:8000/tasks/1 \
 
 ---
 
-### 5. Eliminar una tarea
+### 5. Marcar una tarea como completada
+
+| | |
+|---|---|
+| **Método** | `PATCH` |
+| **Ruta** | `/tasks/{task_id}/complete` |
+| **Parámetros de ruta** | `task_id` (int) — Identificador de la tarea |
+
+Cambia el estado de la tarea a `done`. No requiere cuerpo en la petición.
+
+> **Restricción:** no se permite completar una tarea que ya tiene estado `done`.
+
+**Ejemplo curl:**
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/tasks/1/complete
+```
+
+**Ejemplo de respuesta** (`200 OK`):
+
+```json
+{
+  "id": 1,
+  "title": "Revisar documentación",
+  "description": "Revisar la documentación del sprint 3",
+  "status": "done",
+  "created_at": "2025-05-20T10:30:00"
+}
+```
+
+**Respuesta de error — tarea no encontrada** (`404 Not Found`):
+
+```json
+{
+  "detail": "Tarea no encontrada"
+}
+```
+
+**Respuesta de error — tarea ya completada** (`400 Bad Request`):
+
+```json
+{
+  "detail": "La tarea ya está completada"
+}
+```
+
+---
+
+### 6. Eliminar una tarea
 
 | | |
 |---|---|
@@ -300,6 +348,6 @@ graph LR
 | `aplicacion/base_de_datos.py` | Configuración del engine y la sesión de SQLAlchemy; expone la dependencia `get_db` |
 | `aplicacion/modelos.py` | Modelos ORM: tabla `tasks` y enumeración `TaskStatus` |
 | `aplicacion/esquemas.py` | Esquemas Pydantic: `TaskCreate`, `TaskUpdate` (entrada) y `TaskResponse` (salida) |
-| `aplicacion/rutas/tareas.py` | Definición de los cinco endpoints REST (CRUD completo de tareas) |
+| `aplicacion/rutas/tareas.py` | Definición de los seis endpoints REST (CRUD completo de tareas) |
 | `tests/test_tasks.py` | Tests de integración con pytest, httpx y SQLite independiente |
 | `requirements.txt` | Dependencias fijadas de producción y desarrollo |
