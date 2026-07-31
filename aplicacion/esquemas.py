@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from aplicacion.modelos import TaskStatus
 
@@ -20,6 +20,13 @@ class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
+
+    @field_validator("title")
+    @classmethod
+    def title_min_length(cls, value: str | None) -> str | None:
+        if value is not None and len(value) < 3:
+            raise ValueError("El título debe tener al menos 3 caracteres")
+        return value
 
 
 # Esquema de respuesta que devuelve la API; incluye los campos generados por la BD

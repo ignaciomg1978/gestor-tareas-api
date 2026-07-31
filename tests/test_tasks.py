@@ -78,3 +78,27 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+def test_update_task_title_too_short_returns_422(client):
+    """Enviar un título con menos de 3 caracteres debe devolver 422."""
+    task = _create_task(client)
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"title": "AB"})
+
+    assert resp.status_code == 422
+    body = resp.json()
+    assert any(
+        "3 caracteres" in err.get("msg", "")
+        for err in body.get("detail", [])
+    )
+
+
+def test_update_task_title_exactly_3_chars_succeeds(client):
+    """Un título de exactamente 3 caracteres debe ser aceptado."""
+    task = _create_task(client)
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"title": "ABC"})
+
+    assert resp.status_code == 200
+    assert resp.json()["title"] == "ABC"
