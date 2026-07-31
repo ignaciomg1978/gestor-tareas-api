@@ -156,7 +156,7 @@ curl -X GET http://127.0.0.1:8000/tasks/1
 |---|---|
 | **Método** | `POST` |
 | **Ruta** | `/tasks/` |
-| **Cuerpo (JSON)** | `title` (str, obligatorio), `description` (str, opcional), `status` (str, opcional — por defecto `"pending"`) |
+| **Cuerpo (JSON)** | `title` (str, obligatorio), `description` (str, opcional, máx 200 caracteres), `status` (str, opcional — por defecto `"pending"`) |
 
 Valores válidos para `status`: `"pending"`, `"in_progress"`, `"done"`.
 
@@ -189,7 +189,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 | **Método** | `PATCH` |
 | **Ruta** | `/tasks/{task_id}` |
 | **Parámetros de ruta** | `task_id` (int) — Identificador de la tarea |
-| **Cuerpo (JSON)** | `title` (str, opcional), `description` (str, opcional), `status` (str, opcional) |
+| **Cuerpo (JSON)** | `title` (str, opcional), `description` (str, opcional, máx 200 caracteres), `status` (str, opcional) |
 
 > **Restricción:** no se permite actualizar una tarea cuyo estado sea `done`.
 
