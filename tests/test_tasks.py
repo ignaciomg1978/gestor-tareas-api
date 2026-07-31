@@ -71,6 +71,13 @@ def test_update_in_progress_task_succeeds(client):
     assert resp.json()["status"] == "done"
 
 
+def test_create_task_short_title_returns_422(client):
+    resp = client.post("/tasks/", json={"title": "ab"})
+
+    assert resp.status_code == 422
+    assert resp.json()["detail"] == "Title must be at least 3 characters long"
+
+
 def test_update_done_task_status_change_blocked(client):
     task = _create_task(client, status="done")
 
