@@ -77,18 +77,23 @@ La documentación interactiva (Swagger UI) se genera automáticamente en
 
 La API expone cinco endpoints bajo el prefijo `/tasks`.
 
-### 1. Listar todas las tareas
+### 1. Listar tareas (con filtro opcional)
 
 | | |
 |---|---|
 | **Método** | `GET` |
 | **Ruta** | `/tasks/` |
-| **Parámetros** | Ninguno |
+| **Query params** | `status` (str, opcional) — Filtra por estado (`pending`, `in_progress`, `done`) |
+| | `limit` (int > 0, opcional) — Número máximo de resultados |
 
 **Ejemplo curl:**
 
 ```bash
+# Todas las tareas
 curl -X GET http://127.0.0.1:8000/tasks/
+
+# Solo tareas pendientes, máximo 5
+curl -X GET "http://127.0.0.1:8000/tasks/?status=pending&limit=5"
 ```
 
 **Ejemplo de respuesta** (`200 OK`):
