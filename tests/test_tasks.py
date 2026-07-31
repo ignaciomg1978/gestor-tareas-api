@@ -78,3 +78,47 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+def test_create_task_title_too_short_returns_422(client):
+    """Verifica que no se puede crear una tarea con título menor a 3 caracteres."""
+    resp = client.post("/tasks/", json={"title": "ab"})
+
+    assert resp.status_code == 422
+
+
+def test_create_task_empty_title_returns_422(client):
+    """Verifica que no se puede crear una tarea con título vacío."""
+    resp = client.post("/tasks/", json={"title": ""})
+
+    assert resp.status_code == 422
+
+
+def test_create_task_valid_title_succeeds(client):
+    """Verifica que se puede crear una tarea con título de 3+ caracteres."""
+    resp = client.post("/tasks/", json={"title": "abc"})
+
+    assert resp.status_code == 201
+    assert resp.json()["title"] == "abc"
+
+
+def test_update_done_task_title_blocked(client):
+    """Regresión: una tarea done no debe permitir cambio de título."""
+    task = _create_task(client, status="done")
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"title": "Hacked"})
+
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+def test_update_done_task_description_blocked(client):
+    """Regresión: una tarea done no debe permitir cambio de descripción."""
+    task = _create_task(client, status="done")
+
+    resp = client.patch(
+        f"/tasks/{task['id']}", json={"description": "Hacked"}
+    )
+
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Cannot update a completed task"
